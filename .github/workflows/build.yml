@@ -33,3 +33,17 @@ jobs:
           echo "Clang target architecture: $(clang -dumpmachine)"
           echo "CMake version: $(cmake --version | head -n1)"
         shell: bash
+
+      - name: Set up GCC
+        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: x64
+
+      - name: Report GCC version (take 2)
+        run: |
+          echo "GCC installed as: $(which gcc)"
+          echo "GCC version: $(gcc --version | head -n1)"
+          echo "GCC target architecture: $(gcc -dumpmachine)"
+        shell: bash
