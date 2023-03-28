@@ -29,16 +29,20 @@ jobs:
           echo "Architecture: $(arch)"
           echo "GCC version: $(gcc --version | head -n1)"
           echo "GCC target architecture: $(gcc -dumpmachine)"
-          echo "Clang version: $(clang --version)"
-          echo "Clang target architecture: $(clang -dumpmachine)"
           echo "CMake version: $(cmake --version | head -n1)"
         shell: bash
 
       - name: Set up GCC
-        if: ${{ runner.os == 'Linux' || runner.os == 'macOS' }}
+        if: ${{ runner.os == 'Linux' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: latest
+          platform: x64
+
+      - name: Set up MinGW
+        if: ${{ runner.os == 'Windows' }}
+        uses: egor-tensin/setup-mingw@v2
+        with:
           platform: x64
 
       - name: Report GCC version (take 2)
