@@ -23,12 +23,13 @@ jobs:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
 
     steps:
-      - run: |
-          uname -a
-          arch
-          which gcc
-          which g++
-          which clang
-          which clang++
-          which cmake
+      - name: Report tool versions
+        run: |
+          echo "OS: $(uname -a)"
+          echo "Architecture: $(arch)"
+          echo "GCC version: $(gcc --version | head -n1)"
+          echo "GCC target architecture: $(gcc -dumpmachine)"
+          echo "Clang version: $(clang --version)"
+          echo "Clang target architecture: $(clang -dumpmachine)"
+          echo "CMake version: $(cmake --version | head -n1)"
         shell: bash
