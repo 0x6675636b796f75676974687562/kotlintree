@@ -21,3 +21,14 @@ jobs:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+
+    steps:
+      - run: |
+          uname -a
+          arch
+          which gcc
+          which g++
+          which clang
+          which clang++
+          which cmake
+        shell: bash
