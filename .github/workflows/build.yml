@@ -31,8 +31,10 @@ jobs:
             jna-os-type: darwin
           - jna-arch: x86
             action-platform: x86
+            cflags: '-m32'
           - jna-arch: x86-64
             action-platform: x64
+            cflags: '-m64'
         exclude:
           - jna-os-type: darwin
             jna-arch: x86
@@ -69,6 +71,6 @@ jobs:
       - name: Build sample source code
         run: |
           echo 'int main(int argc, char *argv[]) { return 0; }' >file.c
-          gcc file.c
+          gcc ${{ matrix.cflags }} file.c
           file a.{out,exe}
         shell: bash
