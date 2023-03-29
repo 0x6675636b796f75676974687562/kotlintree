@@ -14,18 +14,31 @@ env:
 
 jobs:
   build-native:
-    name: 'Build native code'
+    name: 'Build native code (${{ matrix.jna-os-type }}-${{ matrix.jna-arch }})'
     runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
       matrix:
         os: [ ubuntu-latest, windows-latest, macos-latest ]
+        jna-os-type: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        action-platform: [ x86, x64 ]
+        include:
+          - os: ubuntu-latest
+            jna-os-type: linux
+          - os: windows-latest
+            jna-os-type: win32
+          - os: macos-latest
+            jna-os-type: darwin
+          - jna-arch: x86
+            action-platform: x86
+          - jna-arch: x86-64
+            action-platform: x64
 
     steps:
       - name: Report tool versions
         run: |
-          echo "OS: $(uname -a)"
           echo "Architecture: $(arch)"
           echo "GCC version: $(gcc --version | head -n1)"
           echo "GCC target architecture: $(gcc -dumpmachine)"
@@ -37,13 +50,13 @@ jobs:
         uses: egor-tensin/setup-gcc@v1
         with:
           version: latest
-          platform: x64
+          platform: ${{ matrix.action-platform }}
 
       - name: Set up MinGW
         if: ${{ runner.os == 'Windows' }}
         uses: egor-tensin/setup-mingw@v2
         with:
-          platform: x64
+          platform: ${{ matrix.action-platform }}
 
       - name: Report GCC version (take 2)
         run: |
