@@ -90,6 +90,9 @@ jobs:
           rm test{,.exe}
           cmake --build .
           sha1sum test{,.exe}
+          rm test{,.exe}
+          cmake --build .
+          sha1sum test{,.exe}
         shell: bash
 
   test:
