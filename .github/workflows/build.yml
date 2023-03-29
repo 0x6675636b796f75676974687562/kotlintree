@@ -35,7 +35,7 @@ jobs:
             action-platform: x64
         exclude:
           - jna-os-type: darwin
-          - jna-arch: x86
+            jna-arch: x86
 
     steps:
       - name: Report tool versions
