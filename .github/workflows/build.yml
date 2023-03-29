@@ -70,5 +70,5 @@ jobs:
         run: |
           echo 'int main(int argc, char *argv[]) { return 0; }' >file.c
           gcc file.c
-          ls -l a.*
+          file a.{out,exe}
         shell: bash
