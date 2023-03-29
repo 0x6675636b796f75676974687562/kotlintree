@@ -98,8 +98,8 @@ jobs:
           cmake --build . --target clean
         shell: bash
 
-      - name: Build sample source code using CMake
-        uses: lukka/get-cmake@latest
+      - name: Build libtree-sitter.{so,dylib}
+        uses: lukka/run-cmake@v10
 
       - name: Examine source code built with CMake
         run: |
