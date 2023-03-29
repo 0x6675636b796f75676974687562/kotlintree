@@ -153,3 +153,17 @@ jobs:
           distribution: 'zulu'
           java-version: 11
           java-package: 'jdk+fx'
+
+  report:
+    name: 'Publish JUnit test results (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jna-os: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        exclude:
+          - jna-os: darwin
+            jna-arch: x86
