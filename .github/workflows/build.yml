@@ -14,22 +14,167 @@ env:
 
 jobs:
   build-native:
-    name: 'Build native code'
+    name: 'Build native code (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
     runs-on: ${{ matrix.os }}
+    env:
+      CC: gcc
+      CXX: g++
+      CMAKE_BUILD_TYPE: Release
+      CFLAGS: ${{ matrix.cflags }}
+      CXXFLAGS: ${{ matrix.cflags }}
 
     strategy:
       fail-fast: false
       matrix:
-        os: [ ubuntu-latest, windows-latest, macos-latest ]
+        jna-os: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        include:
+          - os: ubuntu-latest
+            jna-os: linux
+          - os: windows-latest
+            jna-os: win32
+          - os: macos-latest
+            jna-os: darwin
+          - arch: x86
+            jna-arch: x86
+            cflags: '-m32'
+          - arch: x64
+            jna-arch: x86-64
+            cflags: '-m64'
+        exclude:
+          - jna-os: darwin
+            jna-arch: x86
 
     steps:
+      - name: Set up GCC
+        if: ${{ runner.os == 'Linux' }}
+        uses: egor-tensin/setup-gcc@v1
+        with:
+          version: latest
+          platform: ${{ matrix.arch }}
+
+      - name: Set up MinGW
+        if: ${{ runner.os == 'Windows' }}
+        uses: egor-tensin/setup-mingw@v2
+        with:
+          platform: ${{ matrix.arch }}
+
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+
+      - name: Set up CMake environment
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
+        shell: bash
+
       - name: Report tool versions
         run: |
-          echo "OS: $(uname -a)"
-          echo "Architecture: $(arch)"
-          echo "GCC version: $(gcc --version | head -n1)"
-          echo "GCC target architecture: $(gcc -dumpmachine)"
-          echo "Clang version: $(clang --version)"
-          echo "Clang target architecture: $(clang -dumpmachine)"
-          echo "CMake version: $(cmake --version | head -n1)"
+          echo '| `arch` | `uname -m` | CMake Version | GCC | GCC Version | GCC Target Architecture |' >>${GITHUB_STEP_SUMMARY}
+          echo '|--------|------------|---------------|-----|-------------|-------------------------|' >>${GITHUB_STEP_SUMMARY}
+          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
+        shell: bash
+
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
+      - name: Build sample source code
+        run: |
+          echo 'int main(int argc, char *argv[]) { return 0; }' >test.c
+          echo -e 'cmake_minimum_required(VERSION 3.21)\nproject(test LANGUAGES C)\nset(CMAKE_C_STANDARD 23)\nadd_executable(test test.c)' >CMakeLists.txt
+          cmake .
+          cmake --build .
+          file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
+        shell: bash
+
+  test:
+    name: 'Run tests (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
+    runs-on: ${{ matrix.os }}
+    needs: build-native
+
+    strategy:
+      fail-fast: false
+      matrix:
+        jna-os: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        include:
+          - os: ubuntu-latest
+            jna-os: linux
+          - os: windows-latest
+            jna-os: win32
+          - os: macos-latest
+            jna-os: darwin
+          - arch: x86
+            jna-arch: x86
+          - arch: x64
+            jna-arch: x86-64
+        exclude:
+          - jna-os: darwin
+            jna-arch: x86
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          java-package: 'jdk+fx'
+          architecture: ${{ matrix.arch }}
+
+      - name: Build sample source code
+        run: |
+          java -version
+        shell: bash
+
+  build:
+    name: 'Build Kotlin code'
+    runs-on: ubuntu-latest
+    needs: build-native
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          java-package: 'jdk+fx'
+
+  report:
+    name: 'Publish JUnit test results (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
+    if: ${{ always() }}
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        jna-os: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        exclude:
+          - jna-os: darwin
+            jna-arch: x86
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    steps:
+        # Uses Docker, that's why Linux-only.
+      - name: 'JUnit Tests (EnricoMi/publish-unit-test-result-action)'
+        run: |
+          echo ''
         shell: bash
