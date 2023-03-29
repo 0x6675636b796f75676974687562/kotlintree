@@ -72,5 +72,5 @@ jobs:
         run: |
           echo 'int main(int argc, char *argv[]) { return 0; }' >file.c
           gcc ${{ matrix.cflags }} file.c
-          file a.{out,exe}
+          file a.{out,exe} 2>/dev/null
         shell: bash
