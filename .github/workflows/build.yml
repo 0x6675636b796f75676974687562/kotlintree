@@ -75,6 +75,10 @@ jobs:
           echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
+      - uses: actions/checkout@v3
+        with:
+          submodules: true
+
       - name: Build sample source code
         run: |
           echo 'int main(int argc, char *argv[]) { return 0; }' >test.c
@@ -83,3 +87,17 @@ jobs:
           cmake --build .
           file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
         shell: bash
+
+  build:
+    name: 'Build Kotlin code'
+    runs-on: ubuntu-latest
+    needs: build-native
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
