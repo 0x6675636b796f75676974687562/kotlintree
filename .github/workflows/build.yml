@@ -14,7 +14,7 @@ env:
 
 jobs:
   build-native:
-    name: 'Build native code (${{ matrix.jna-os-type }}-${{ matrix.jna-arch }})'
+    name: 'Build native code (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
     runs-on: ${{ matrix.os }}
     env:
       CC: gcc
@@ -26,23 +26,23 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        jna-os-type: [ linux, win32, darwin ]
+        jna-os: [ linux, win32, darwin ]
         jna-arch: [ x86, x86-64 ]
         include:
           - os: ubuntu-latest
-            jna-os-type: linux
+            jna-os: linux
           - os: windows-latest
-            jna-os-type: win32
+            jna-os: win32
           - os: macos-latest
-            jna-os-type: darwin
-          - jna-arch: x86
-            action-platform: x86
+            jna-os: darwin
+          - arch: x86
+            jna-arch: x86
             cflags: '-m32'
-          - jna-arch: x86-64
-            action-platform: x64
+          - arch: x64
+            jna-arch: x86-64
             cflags: '-m64'
         exclude:
-          - jna-os-type: darwin
+          - jna-os: darwin
             jna-arch: x86
 
     steps:
@@ -51,13 +51,13 @@ jobs:
         uses: egor-tensin/setup-gcc@v1
         with:
           version: latest
-          platform: ${{ matrix.action-platform }}
+          platform: ${{ matrix.arch }}
 
       - name: Set up MinGW
         if: ${{ runner.os == 'Windows' }}
         uses: egor-tensin/setup-mingw@v2
         with:
-          platform: ${{ matrix.action-platform }}
+          platform: ${{ matrix.arch }}
 
       - name: Set up CMake
         uses: lukka/get-cmake@latest
@@ -88,6 +88,46 @@ jobs:
           file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
         shell: bash
 
+  test:
+    name: 'Run tests (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        jna-os: [ linux, win32, darwin ]
+        jna-arch: [ x86, x86-64 ]
+        include:
+          - os: ubuntu-latest
+            jna-os: linux
+          - os: windows-latest
+            jna-os: win32
+          - os: macos-latest
+            jna-os: darwin
+          - arch: x86
+            jna-arch: x86
+          - arch: x64
+            jna-arch: x86-64
+        exclude:
+          - jna-os: darwin
+            jna-arch: x86
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          # Fetch Git tags, so that semantic version can be calculated.
+          # Alternatively, run `git fetch --prune --unshallow --tags` as the
+          # next step, see
+          # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
+          fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          java-package: 'jdk+fx'
+          architecture: ${{ matrix.arch }}
+
   build:
     name: 'Build Kotlin code'
     runs-on: ubuntu-latest
@@ -101,3 +141,9 @@ jobs:
           # next step, see
           # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
           fetch-depth: 0
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 11
+          java-package: 'jdk+fx'
