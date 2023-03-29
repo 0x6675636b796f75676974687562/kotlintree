@@ -94,12 +94,18 @@ jobs:
 
       - name: 'Examine source code built with CMake'
         run: |
-          find jna-lib/ -type f -name 'libtree-sitter.so'
+          find jna-lib/ -type f -name 'libtree-sitter.so.*'
           find jna-lib/ -type l -name 'libtree-sitter.so'
-          find jna-lib/ -type f -name 'libtree-sitter.dylib'
+          find jna-lib/ -type f -name 'libtree-sitter.*.dylib'
           find jna-lib/ -type l -name 'libtree-sitter.dylib'
           find jna-lib/ -type f -name 'tree-sitter.dll'
           find jna-lib/ -type l -name 'tree-sitter.dll'
+          find jna-lib/ -type f -name 'libtree-sitter-cpp.so.*'
+          find jna-lib/ -type l -name 'libtree-sitter-cpp.so'
+          find jna-lib/ -type f -name 'libtree-sitter-cpp.*.dylib'
+          find jna-lib/ -type l -name 'libtree-sitter-cpp.dylib'
+          find jna-lib/ -type f -name 'tree-sitter-cpp.dll'
+          find jna-lib/ -type l -name 'tree-sitter-cpp.dll'
         shell: bash
 
       - name: 'Upload native libraries'
