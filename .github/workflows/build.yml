@@ -16,6 +16,9 @@ jobs:
   build-native:
     name: 'Build native code (${{ matrix.jna-os-type }}-${{ matrix.jna-arch }})'
     runs-on: ${{ matrix.os }}
+    env:
+      CC: gcc
+      CXX: g++
 
     strategy:
       fail-fast: false
@@ -53,6 +56,9 @@ jobs:
         with:
           platform: ${{ matrix.action-platform }}
 
+      - name: Set up CMake
+        uses: lukka/get-cmake@latest
+
       - name: Report tool versions
         run: |
           echo '| `arch` | `uname -m` | CMake Version | GCC | GCC Version | GCC Target Architecture |' >>${GITHUB_STEP_SUMMARY}
@@ -62,7 +68,9 @@ jobs:
 
       - name: Build sample source code
         run: |
-          echo 'int main(int argc, char *argv[]) { return 0; }' >file.c
-          gcc ${{ matrix.cflags }} file.c
-          file -b a.{out,exe} 2>/dev/null | grep -vF 'No such file or directory'
+          echo 'int main(int argc, char *argv[]) { return 0; }' >test.c
+          echo -e 'cmake_minimum_required(VERSION 3.21)\nproject(test LANGUAGES C)\nset(CMAKE_C_STANDARD 23)\nadd_executable(test test.c)' >CMakeLists.txt
+          cmake -DCMAKE_C_FLAGS=${{ matrix.cflags }} -DCMAKE_CXX_FLAGS=${{ matrix.cflags }} .
+          cmake --build .
+          file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
         shell: bash
