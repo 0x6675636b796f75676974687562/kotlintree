@@ -167,3 +167,14 @@ jobs:
         exclude:
           - jna-os: darwin
             jna-arch: x86
+
+    permissions:
+      checks: write
+      pull-requests: write
+
+    steps:
+        # Uses Docker, that's why Linux-only.
+      - name: 'JUnit Tests (EnricoMi/publish-unit-test-result-action)'
+        run: |
+          echo ''
+        shell: bash
