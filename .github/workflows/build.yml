@@ -65,3 +65,10 @@ jobs:
           echo "GCC version: $(gcc --version | head -n1)"
           echo "GCC target architecture: $(gcc -dumpmachine)"
         shell: bash
+
+      - name: Build sample source code
+        run: |
+          echo 'int main(int argc, char *argv[]) { return 0; }' >file.c
+          gcc file.c
+          ls -l a.*
+        shell: bash
