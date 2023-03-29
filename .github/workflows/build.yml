@@ -57,7 +57,7 @@ jobs:
         run: |
           echo '| `arch` | `uname -m` | CMake Version | GCC | GCC Version | GCC Target Architecture |' >>${GITHUB_STEP_SUMMARY}
           echo '|--------|------------|---------------|-----|-------------|-------------------------|' >>${GITHUB_STEP_SUMMARY}
-          echo "|$(arch)|$(uname -m)|$(cmake --version)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
+          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
       - name: Build sample source code
