@@ -1,6 +1,8 @@
 [submodule "jna-lib/tree-sitter"]
 	path = jna-lib/tree-sitter
 	url = https://github.com/0x6675636b796f75676974687562/tree-sitter
+	branch = v0.20.1-kotlintree
 [submodule "jna-lib/tree-sitter-cpp"]
 	path = jna-lib/tree-sitter-cpp
 	url = https://github.com/0x6675636b796f75676974687562/tree-sitter-cpp
+	branch = v0.19.0-kotlintree
