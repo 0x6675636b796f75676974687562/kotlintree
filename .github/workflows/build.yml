@@ -91,6 +91,7 @@ jobs:
   test:
     name: 'Run tests (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
     runs-on: ${{ matrix.os }}
+    needs: build-native
 
     strategy:
       fail-fast: false
