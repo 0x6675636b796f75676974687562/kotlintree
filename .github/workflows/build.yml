@@ -99,12 +99,20 @@ jobs:
         shell: bash
 
       - name: Build libtree-sitter.{so,dylib}
-        uses: lukka/run-cmake@v10
+        run: |
+          cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
+          cmake --build jna-lib/tree-sitter/build/
+        shell: bash
+
+      - name: Build libtree-sitter-cpp.{so,dylib}
+        run: |
+          cmake -S jna-lib/tree-sitter-cpp/ -B jna-lib/tree-sitter-cpp/build/
+          cmake --build jna-lib/tree-sitter-cpp/build/
+        shell: bash
 
       - name: Examine source code built with CMake
         run: |
-          sha1sum test* || echo 'sha1sum not available'
-          file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
+          find jna-lib/ -type f -name '*tree-sitter*'
         shell: bash
 
   test:
