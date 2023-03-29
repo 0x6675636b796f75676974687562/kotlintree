@@ -86,6 +86,10 @@ jobs:
           cmake .
           cmake --build .
           file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
+          sha1sum test{,.exe}
+          rm test{,.exe}
+          cmake --build .
+          sha1sum test{,.exe}
         shell: bash
 
   test:
