@@ -129,6 +129,11 @@ jobs:
           java-package: 'jdk+fx'
           architecture: ${{ matrix.arch }}
 
+      - name: Build sample source code
+        run: |
+          java -version
+        shell: bash
+
   build:
     name: 'Build Kotlin code'
     runs-on: ubuntu-latest
