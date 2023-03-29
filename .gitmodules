@@ -1,0 +1,6 @@
+[submodule "jna-lib/tree-sitter"]
+	path = jna-lib/tree-sitter
+	url = https://github.com/0x6675636b796f75676974687562/tree-sitter
+[submodule "jna-lib/tree-sitter-cpp"]
+	path = jna-lib/tree-sitter-cpp
+	url = https://github.com/0x6675636b796f75676974687562/tree-sitter-cpp
