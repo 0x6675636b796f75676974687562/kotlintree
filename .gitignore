@@ -15,3 +15,6 @@ bin
 
 pkgconfig
 include
+
+/jna-lib/src/main/resources/win32-x86/tree-sitter-cpp.dll
+/jna-lib/src/main/resources/win32-x86-64/tree-sitter-cpp.dll
