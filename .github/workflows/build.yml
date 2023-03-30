@@ -68,6 +68,13 @@ jobs:
           then
             echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
             echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
+          elif [[ '${{ matrix.arch }}' == 'x86' ]]
+          then
+            echo 'CC=i686-w64-mingw32-gcc' >>${GITHUB_ENV}
+            echo 'CXX=i686-w64-mingw32-g++' >>${GITHUB_ENV}
+          else
+            echo 'CC=x86_64-w64-mingw32-gcc' >>${GITHUB_ENV}
+            echo 'CXX=x86_64-w64-mingw32-g++' >>${GITHUB_ENV}
           fi
           echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
         shell: bash
@@ -87,37 +94,52 @@ jobs:
           submodules: recursive
 
       - name: 'Build libtree-sitter.so'
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
+          cmake --build jna-lib/tree-sitter/build/
+        shell: bash
+
+      - name: 'Build tree-sitter.dll'
+        if: ${{ runner.os == 'Windows' }}
+        # MinGW builds require `mingw-w64-{i686,x86_64}-icu` (`unicode/umachine.h`)
+        # which is not installed by default.
+        # In the future, we'll try to resolve this by using the `msys2/setup-msys2` Action.
+        continue-on-error: true
         run: |
           cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
           cmake --build jna-lib/tree-sitter/build/
         shell: bash
 
       - name: 'Build libtree-sitter-cpp.so'
-        # Try to build `libtree-sitter-cpp.so` even if the previous step has failed.
-        if: ${{ always() }}
         run: |
           cmake -S jna-lib/tree-sitter-cpp/ -B jna-lib/tree-sitter-cpp/build/
           cmake --build jna-lib/tree-sitter-cpp/build/
         shell: bash
 
       - name: 'Upload native libraries (libtree-sitter.so)'
-        # Try to upload native libraries, even if some of them failed to build.
-        if: ${{ always() }}
+        if: ${{ runner.os != 'Windows' }}
         uses: actions/upload-artifact@v3
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
             jna-lib/tree-sitter/build/libtree-sitter*.so*
             jna-lib/tree-sitter/build/libtree-sitter*.dylib
-            jna-lib/tree-sitter/build/tree-sitter*.dll
           if-no-files-found: error
+          retention-days: 1
+
+      - name: 'Upload native libraries (tree-sitter.dll)'
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: |
+            jna-lib/tree-sitter/build/tree-sitter*.dll
           retention-days: 1
 
         # We put each file into the artifact separately, so that internal
         # directory structure remains flat (no relative paths get stored).
       - name: 'Upload native libraries (libtree-sitter-cpp.so)'
-        # Try to upload native libraries, even if some of them failed to build.
-        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
