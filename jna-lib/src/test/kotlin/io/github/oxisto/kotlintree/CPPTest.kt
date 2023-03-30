@@ -2,8 +2,8 @@ package io.github.oxisto.kotlintree
 
 import io.github.oxisto.kotlintree.jvm.CppParser
 import java.io.File
+import kotlin.test.Test
 import kotlin.test.assertEquals
-import org.junit.Test
 
 class CPPTest {
     @Test
