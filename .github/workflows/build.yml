@@ -54,21 +54,6 @@ jobs:
           version: latest
           platform: ${{ matrix.arch }}
 
-      - name: 'Check GCC availability (MinGW)'
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          echo "CC = ${CC}; expanded: $(which "${CC}" 2>/dev/null)"
-          echo "CXX = ${CXX}; expanded: $(which "${CXX}" 2>/dev/null)"
-          echo "cc = $(which cc 2>/dev/null)"
-          echo "c++ = $(which c++ 2>/dev/null)"
-          echo "gcc = $(which gcc 2>/dev/null)"
-          echo "g++ = $(which g++ 2>/dev/null)"
-          echo "i686-w64-mingw32-gcc  = $(which i686-w64-mingw32-gcc 2>/dev/null)"
-          echo "i686-w64-mingw32-g++  = $(which i686-w64-mingw32-g++ 2>/dev/null)"
-          echo "x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc 2>/dev/null)"
-          echo "x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++ 2>/dev/null)"
-        shell: bash
-
       - name: 'Set up MinGW'
         id: 'mingw'
         if: ${{ runner.os == 'Windows' }}
@@ -81,31 +66,11 @@ jobs:
         run: |
           echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
           echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
-        shell: bash
-
-      - name: 'Check GCC availability (MinGW, 2)'
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          echo "::notice title=CC::CC = ${CC}; expanded: $(which "${CC}" 2>/dev/null)"
-          echo "::notice title=CXX::CXX = ${CXX}; expanded: $(which "${CXX}" 2>/dev/null)"
-          echo "::notice title=cc::cc = $(which cc 2>/dev/null)"
-          echo "::notice title=c++::c++ = $(which c++ 2>/dev/null)"
-          echo "::notice title=gcc::gcc = $(which gcc 2>/dev/null)"
-          echo "::notice title=g++::g++ = $(which g++ 2>/dev/null)"
-          echo "::notice title=i686-w64-mingw32-gcc::i686-w64-mingw32-gcc = $(which i686-w64-mingw32-gcc 2>/dev/null)"
-          echo "::notice title=i686-w64-mingw32-gcc::i686-w64-mingw32-g++ = $(which i686-w64-mingw32-g++ 2>/dev/null)"
-          echo "::notice title=x86_64-w64-mingw32-gcc::x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc 2>/dev/null)"
-          echo "::notice title=x86_64-w64-mingw32-gcc::x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++ 2>/dev/null)"
+          echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
         shell: bash
 
       - name: 'Set up CMake'
         uses: lukka/get-cmake@latest
-
-      - name: 'Set up CMake environment'
-        if: ${{ runner.os == 'Windows' }}
-        run: |
-          echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
-        shell: bash
 
       - name: 'Report tool versions'
         run: |
@@ -118,42 +83,41 @@ jobs:
         with:
           submodules: recursive
 
-      - name: 'Build libtree-sitter.{so,dylib}'
+      - name: 'Build libtree-sitter.so'
         run: |
           cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
           cmake --build jna-lib/tree-sitter/build/
         shell: bash
 
-      - name: 'Build libtree-sitter-cpp.{so,dylib}'
+      - name: 'Build libtree-sitter-cpp.so'
+        # Try tu build `libtree-sitter-cpp.so` even if the previous step has failed.
+        if: ${{ always() }}
         run: |
           cmake -S jna-lib/tree-sitter-cpp/ -B jna-lib/tree-sitter-cpp/build/
           cmake --build jna-lib/tree-sitter-cpp/build/
         shell: bash
 
-      - name: 'Examine source code built with CMake'
-        run: |
-          find jna-lib/ -type f -name 'libtree-sitter.so.*'
-          find jna-lib/ -type l -name 'libtree-sitter.so'
-          find jna-lib/ -type f -name 'libtree-sitter.*.dylib'
-          find jna-lib/ -type l -name 'libtree-sitter.dylib'
-          find jna-lib/ -type f -name 'tree-sitter.dll'
-          find jna-lib/ -type l -name 'tree-sitter.dll'
-          find jna-lib/ -type f -name 'libtree-sitter-cpp.so.*'
-          find jna-lib/ -type l -name 'libtree-sitter-cpp.so'
-          find jna-lib/ -type f -name 'libtree-sitter-cpp.*.dylib'
-          find jna-lib/ -type l -name 'libtree-sitter-cpp.dylib'
-          find jna-lib/ -type f -name 'tree-sitter-cpp.dll'
-          find jna-lib/ -type l -name 'tree-sitter-cpp.dll'
-        shell: bash
-
-      - name: 'Upload native libraries'
+      - name: 'Upload native libraries (libtree-sitter.so)'
         uses: actions/upload-artifact@v3
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
-            jna-lib/tree-sitter*/build/libtree-sitter*.so*
-            jna-lib/tree-sitter*/build/libtree-sitter*.dylib
-            jna-lib/tree-sitter*/build/tree-sitter*.dll
+            jna-lib/tree-sitter/build/libtree-sitter*.so*
+            jna-lib/tree-sitter/build/libtree-sitter*.dylib
+            jna-lib/tree-sitter/build/tree-sitter*.dll
+          if-no-files-found: error
+          retention-days: 1
+
+        # We put each file into the artifact separately, so that internal
+        # directory structure remains flat (no relative paths get stored).
+      - name: 'Upload native libraries (libtree-sitter-cpp.so)'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: |
+            jna-lib/tree-sitter-cpp/build/libtree-sitter*.so*
+            jna-lib/tree-sitter-cpp/build/libtree-sitter*.dylib
+            jna-lib/tree-sitter-cpp/build/tree-sitter*.dll
           if-no-files-found: error
           retention-days: 1
 
