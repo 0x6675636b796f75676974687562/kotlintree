@@ -39,17 +39,6 @@ publishing {
     }
 }
 
-var buildNative = task<Exec>("buildNative") {
-    onlyIf {
-        /*
-         * Running shell scripts on Windows is not possible w/o extra effort.
-         */
-        !DefaultNativePlatform.getCurrentOperatingSystem().isWindows
-    }
-    commandLine("./build.sh")
-}
-tasks.findByName("processResources")?.dependsOn(buildNative)
-
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
@@ -68,6 +57,10 @@ dependencies {
 testing {
     suites {
         // Configure the built-in test suite
+        @Suppress(
+            "UnstableApiUsage",
+            "UNUSED_VARIABLE",
+        )
         val test by getting(JvmTestSuite::class) {
             // Use Kotlin Test test framework
             useKotlinTest()
