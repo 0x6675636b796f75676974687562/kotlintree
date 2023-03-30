@@ -201,11 +201,25 @@ jobs:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/
 
+      - name: 'Strip version information from file names'
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          for file in $(find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \))
+          do
+            local old_file="$(basename "${file}"
+            local new_file="$(echo "${old_file}")" | sed -n '/^lib..*\.\(so\|dylib\).*/s/\.[0-9][0-9]*//gp')"
+            if [[ "${old_file}" != "${new_file}" ]]
+            then
+              echo "mv ${file} $(dirname ${file})/${new_file}"
+              mv -v "${file}" "$(dirname "${file}")/${new_file}"
+            fi
+          done
+        shell: bash
+
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
         run: |
           find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
-          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
@@ -275,11 +289,25 @@ jobs:
           name: 'libtree-sitter-win32-x86-64'
           path: jna-lib/src/main/resources/win32-x86-64/
 
+      - name: 'Strip version information from file names'
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          for file in $(find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \))
+          do
+            local old_file="$(basename "${file}"
+            local new_file="$(echo "${old_file}")" | sed -n '/^lib..*\.\(so\|dylib\).*/s/\.[0-9][0-9]*//gp')"
+            if [[ "${old_file}" != "${new_file}" ]]
+            then
+              echo "mv ${file} $(dirname ${file})/${new_file}"
+              mv -v "${file}" "$(dirname "${file}")/${new_file}"
+            fi
+          done
+        shell: bash
+
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
         run: |
           find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
-          find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
