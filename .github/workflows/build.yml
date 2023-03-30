@@ -204,7 +204,7 @@ jobs:
       - name: 'Strip version information from file names'
         if: ${{ runner.os != 'Windows' }}
         run: |
-          for file in $(find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \))
+          for file in $(find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name 'lib*.so*' -o -name 'lib*.dylib' \))
           do
             local old_file="$(basename "${file}"
             local new_file="$(echo "${old_file}")" | sed -n '/^lib..*\.\(so\|dylib\).*/s/\.[0-9][0-9]*//gp')"
@@ -219,7 +219,8 @@ jobs:
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
         run: |
-          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name 'lib*.so' -o -name 'lib*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name 'lib*.so' -o -name 'lib*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
@@ -307,7 +308,8 @@ jobs:
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
         run: |
-          find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/ -type f \( -name 'lib*.so' -o -name 'lib*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/ -type f \( -name 'lib*.so' -o -name 'lib*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
