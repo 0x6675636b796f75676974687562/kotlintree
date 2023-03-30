@@ -73,7 +73,7 @@ jobs:
         run: |
           echo '| `arch` | `uname -m` | CMake Version | GCC | GCC Version | GCC Target Architecture |' >>${GITHUB_STEP_SUMMARY}
           echo '|--------|------------|---------------|-----|-------------|-------------------------|' >>${GITHUB_STEP_SUMMARY}
-          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
+          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which "${CC}")|$("${CC}" --version | head -n1)|$("${CC}" -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
       - uses: actions/checkout@v3
@@ -113,12 +113,10 @@ jobs:
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
-            jna-lib/tree-sitter/*.so
-            jna-lib/tree-sitter/*.dylib
-            jna-lib/tree-sitter/*.dll
-            jna-lib/tree-sitter-cpp/*.so
-            jna-lib/tree-sitter-cpp/*.dylib
-            jna-lib/tree-sitter-cpp/*.dll
+            jna-lib/tree-sitter*/libtree-sitter*.so*
+            jna-lib/tree-sitter*/libtree-sitter*.dylib
+            jna-lib/tree-sitter*/tree-sitter*.dll
+          if-no-files-found: error
           retention-days: 1
 
   test:
