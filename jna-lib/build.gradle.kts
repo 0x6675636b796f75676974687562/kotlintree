@@ -77,7 +77,7 @@ dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib")
 
-    api("net.java.dev.jna:jna:5.10.0")
+    api("net.java.dev.jna:jna:5.13.0")
 }
 
 testing {
