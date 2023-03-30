@@ -2,7 +2,7 @@
 
 This little project provides Kotlin bindings for the popular [tree-sitter](http://github.com/tree-sitter/tree-sitter) library. Currently it only supports the Kotlin JVM target, but Kotlin native is on the roadmap (see [#3](https://github.com/oxisto/kotlintree/issues/3)).
 
-UIt currently ships forks of [`tree-sitter`](https://github.com/0x6675636b796f75676974687562/tree-sitter) itself,
+It currently ships forks of [`tree-sitter`](https://github.com/0x6675636b796f75676974687562/tree-sitter) itself,
 as well as [`tree-sitter-cpp`](https://github.com/0x6675636b796f75676974687562/tree-sitter-cpp).
 We might want to include more languages (see [#2](https://github.com/oxisto/kotlintree/issues/2)).
 
