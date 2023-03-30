@@ -202,7 +202,8 @@ jobs:
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
         run: |
-          chmod 755 jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/*.{so,dylib}*
+          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
@@ -276,6 +277,7 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: |
           find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
+          find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec ls -lF --color=always '{}' ';'
         shell: bash
 
       - name: 'Set up Java 11'
