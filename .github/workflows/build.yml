@@ -19,9 +19,10 @@ jobs:
     env:
       CC: gcc
       CXX: g++
-      CMAKE_BUILD_TYPE: Release
       CFLAGS: ${{ matrix.cflags }}
       CXXFLAGS: ${{ matrix.cflags }}
+      CMAKE_BUILD_TYPE: Release
+      CMAKE_COLOR_DIAGNOSTICS: ON
 
     strategy:
       fail-fast: false
@@ -46,47 +47,108 @@ jobs:
             jna-arch: x86
 
     steps:
-      - name: Set up GCC
+      - name: 'Set up GCC'
         if: ${{ runner.os == 'Linux' }}
         uses: egor-tensin/setup-gcc@v1
         with:
           version: latest
           platform: ${{ matrix.arch }}
 
-      - name: Set up MinGW
-        if: ${{ runner.os == 'Windows' }}
+      - name: 'Set up MinGW'
+        id: 'mingw'
+        if: ${{ runner.os == 'Windows' && matrix.arch == 'x86' }}
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
 
-      - name: Set up CMake
-        uses: lukka/get-cmake@latest
-
-      - name: Set up CMake environment
+      - name: 'Set up MinGW environment'
         if: ${{ runner.os == 'Windows' }}
         run: |
+          if [[ '${{ steps.mingw.outcome }}' == 'success' ]]
+          then
+            echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
+            echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
+          elif [[ '${{ matrix.arch }}' == 'x86' ]]
+          then
+            echo 'CC=i686-w64-mingw32-gcc' >>${GITHUB_ENV}
+            echo 'CXX=i686-w64-mingw32-g++' >>${GITHUB_ENV}
+          else
+            echo 'CC=x86_64-w64-mingw32-gcc' >>${GITHUB_ENV}
+            echo 'CXX=x86_64-w64-mingw32-g++' >>${GITHUB_ENV}
+          fi
           echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
         shell: bash
 
-      - name: Report tool versions
+      - name: 'Set up CMake'
+        uses: lukka/get-cmake@latest
+
+      - name: 'Report tool versions'
         run: |
           echo '| `arch` | `uname -m` | CMake Version | GCC | GCC Version | GCC Target Architecture |' >>${GITHUB_STEP_SUMMARY}
           echo '|--------|------------|---------------|-----|-------------|-------------------------|' >>${GITHUB_STEP_SUMMARY}
-          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which gcc)|$(gcc --version | head -n1)|$(gcc -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
+          echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which "${CC}")|$("${CC}" --version | head -n1)|$("${CC}" -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
       - uses: actions/checkout@v3
         with:
-          submodules: true
+          submodules: recursive
 
-      - name: Build sample source code
+      - name: 'Build libtree-sitter.so'
+        if: ${{ runner.os != 'Windows' }}
         run: |
-          echo 'int main(int argc, char *argv[]) { return 0; }' >test.c
-          echo -e 'cmake_minimum_required(VERSION 3.21)\nproject(test LANGUAGES C)\nset(CMAKE_C_STANDARD 23)\nadd_executable(test test.c)' >CMakeLists.txt
-          cmake .
-          cmake --build .
-          file -b test{,.exe} 2>/dev/null | grep -vF 'No such file or directory'
+          cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
+          cmake --build jna-lib/tree-sitter/build/
         shell: bash
+
+      - name: 'Build tree-sitter.dll'
+        if: ${{ runner.os == 'Windows' }}
+        # MinGW builds require `mingw-w64-{i686,x86_64}-icu` (`unicode/umachine.h`)
+        # which is not installed by default.
+        # In the future, we'll try to resolve this by using the `msys2/setup-msys2` Action.
+        continue-on-error: true
+        run: |
+          cmake -S jna-lib/tree-sitter/ -B jna-lib/tree-sitter/build/
+          cmake --build jna-lib/tree-sitter/build/
+        shell: bash
+
+      - name: 'Build libtree-sitter-cpp.so'
+        run: |
+          cmake -S jna-lib/tree-sitter-cpp/ -B jna-lib/tree-sitter-cpp/build/
+          cmake --build jna-lib/tree-sitter-cpp/build/
+        shell: bash
+
+      - name: 'Upload native libraries (libtree-sitter.so)'
+        if: ${{ runner.os != 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: |
+            jna-lib/tree-sitter/build/libtree-sitter*.so*
+            jna-lib/tree-sitter/build/libtree-sitter*.dylib
+          if-no-files-found: error
+          retention-days: 1
+
+      - name: 'Upload native libraries (tree-sitter.dll)'
+        if: ${{ runner.os == 'Windows' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: |
+            jna-lib/tree-sitter/build/tree-sitter*.dll
+          retention-days: 1
+
+        # We put each file into the artifact separately, so that internal
+        # directory structure remains flat (no relative paths get stored).
+      - name: 'Upload native libraries (libtree-sitter-cpp.so)'
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: |
+            jna-lib/tree-sitter-cpp/build/libtree-sitter*.so*
+            jna-lib/tree-sitter-cpp/build/libtree-sitter*.dylib
+            jna-lib/tree-sitter-cpp/build/tree-sitter*.dll
+          if-no-files-found: error
+          retention-days: 1
 
   test:
     name: 'Run tests (${{ matrix.jna-os }}-${{ matrix.jna-arch }})'
@@ -129,7 +191,7 @@ jobs:
           java-package: 'jdk+fx'
           architecture: ${{ matrix.arch }}
 
-      - name: Build sample source code
+      - name: 'Build sample source code'
         run: |
           java -version
         shell: bash
