@@ -351,6 +351,8 @@ jobs:
         exclude:
           - jna-os: darwin
             jna-arch: x86
+          - jna-os: win32
+            jna-arch: x86
 
     permissions:
       checks: write
