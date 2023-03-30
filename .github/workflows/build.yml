@@ -212,7 +212,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   publish:
-    name: 'Build Kotlin code'
+    name: 'Publish packages'
     runs-on: ubuntu-latest
     needs: build-native
 
