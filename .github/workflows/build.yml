@@ -67,29 +67,35 @@ jobs:
           echo "i686-w64-mingw32-g++  = $(which i686-w64-mingw32-g++ 2>/dev/null)"
           echo "x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc 2>/dev/null)"
           echo "x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++ 2>/dev/null)"
-          echo "pacman = $(which pacman 2>/dev/null)"
         shell: bash
 
       - name: 'Set up MinGW'
+        id: 'mingw'
         if: ${{ runner.os == 'Windows' }}
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
 
+      - name: 'Set up MinGW environment'
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
+          echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
+        shell: bash
+
       - name: 'Check GCC availability (MinGW, 2)'
         if: ${{ runner.os == 'Windows' }}
         run: |
-          echo "CC = ${CC}; expanded: $(which "${CC}" 2>/dev/null)"
-          echo "CXX = ${CXX}; expanded: $(which "${CXX}" 2>/dev/null)"
-          echo "cc = $(which cc 2>/dev/null)"
-          echo "c++ = $(which c++ 2>/dev/null)"
-          echo "gcc = $(which gcc 2>/dev/null)"
-          echo "g++ = $(which g++ 2>/dev/null)"
-          echo "i686-w64-mingw32-gcc  = $(which i686-w64-mingw32-gcc 2>/dev/null)"
-          echo "i686-w64-mingw32-g++  = $(which i686-w64-mingw32-g++ 2>/dev/null)"
-          echo "x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc 2>/dev/null)"
-          echo "x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++ 2>/dev/null)"
-          echo "pacman = $(which pacman 2>/dev/null)"
+          echo "::notice title=CC::CC = ${CC}; expanded: $(which "${CC}" 2>/dev/null)"
+          echo "::notice title=CXX::CXX = ${CXX}; expanded: $(which "${CXX}" 2>/dev/null)"
+          echo "::notice title=cc::cc = $(which cc 2>/dev/null)"
+          echo "::notice title=c++::c++ = $(which c++ 2>/dev/null)"
+          echo "::notice title=gcc::gcc = $(which gcc 2>/dev/null)"
+          echo "::notice title=g++::g++ = $(which g++ 2>/dev/null)"
+          echo "::notice title=i686-w64-mingw32-gcc::i686-w64-mingw32-gcc = $(which i686-w64-mingw32-gcc 2>/dev/null)"
+          echo "::notice title=i686-w64-mingw32-gcc::i686-w64-mingw32-g++ = $(which i686-w64-mingw32-g++ 2>/dev/null)"
+          echo "::notice title=x86_64-w64-mingw32-gcc::x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc 2>/dev/null)"
+          echo "::notice title=x86_64-w64-mingw32-gcc::x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++ 2>/dev/null)"
         shell: bash
 
       - name: 'Set up CMake'
