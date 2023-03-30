@@ -193,6 +193,18 @@ jobs:
           # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
           fetch-depth: 0
 
+      - name: 'Download native libraries'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
+          path: jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/
+
+      - name: 'Set POSIX attributes'
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          chmod 755 jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/*.{so,dylib}*
+        shell: bash
+
       - name: 'Set up Java 11'
         uses: actions/setup-java@v3
         with:
@@ -207,6 +219,7 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
+            --continue
             build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -229,6 +242,42 @@ jobs:
           # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
           fetch-depth: 0
 
+      - name: 'Download native libraries (darwin-x86_64)'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-darwin-x86_64'
+          path: jna-lib/src/main/resources/darwin-x86_64/
+
+      - name: 'Download native libraries (linux-x86)'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-linux-x86'
+          path: jna-lib/src/main/resources/linux-x86/
+
+      - name: 'Download native libraries (linux-x86_64)'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-linux-x86_64'
+          path: jna-lib/src/main/resources/linux-x86_64/
+
+      - name: 'Download native libraries (win32-x86)'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-win32-x86'
+          path: jna-lib/src/main/resources/win32-x86/
+
+      - name: 'Download native libraries (win32-x86_64)'
+        uses: actions/download-artifact@v3
+        with:
+          name: 'libtree-sitter-win32-x86_64'
+          path: jna-lib/src/main/resources/win32-x86_64/
+
+      - name: 'Set POSIX attributes'
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          find jna-lib/src/main/resources/ -type f \( -name '*.so*' -o -name '*.dylib' \) -exec chmod 755 '{}' ';'
+        shell: bash
+
       - name: 'Set up Java 11'
         uses: actions/setup-java@v3
         with:
@@ -242,6 +291,7 @@ jobs:
         with:
           gradle-version: wrapper
           arguments: |
+            -x test
             build
             publish
         env:
