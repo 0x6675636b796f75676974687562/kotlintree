@@ -56,7 +56,7 @@ jobs:
 
       - name: 'Set up MinGW'
         id: 'mingw'
-        if: ${{ runner.os == 'Windows' }}
+        if: ${{ runner.os == 'Windows' && matrix.arch == 'x86' }}
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
@@ -64,8 +64,11 @@ jobs:
       - name: 'Set up MinGW environment'
         if: ${{ runner.os == 'Windows' }}
         run: |
-          echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
-          echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
+          if [[ '${{ steps.mingw.outcome }}' == 'success' ]]
+          then
+            echo 'CC=${{ steps.mingw.outputs.gcc }}' >>${GITHUB_ENV}
+            echo 'CXX=${{ steps.mingw.outputs.gxx }}' >>${GITHUB_ENV}
+          fi
           echo 'CMAKE_GENERATOR=MinGW Makefiles' >>${GITHUB_ENV}
         shell: bash
 
@@ -90,7 +93,7 @@ jobs:
         shell: bash
 
       - name: 'Build libtree-sitter-cpp.so'
-        # Try tu build `libtree-sitter-cpp.so` even if the previous step has failed.
+        # Try to build `libtree-sitter-cpp.so` even if the previous step has failed.
         if: ${{ always() }}
         run: |
           cmake -S jna-lib/tree-sitter-cpp/ -B jna-lib/tree-sitter-cpp/build/
@@ -98,6 +101,8 @@ jobs:
         shell: bash
 
       - name: 'Upload native libraries (libtree-sitter.so)'
+        # Try to upload native libraries, even if some of them failed to build.
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
@@ -111,6 +116,8 @@ jobs:
         # We put each file into the artifact separately, so that internal
         # directory structure remains flat (no relative paths get stored).
       - name: 'Upload native libraries (libtree-sitter-cpp.so)'
+        # Try to upload native libraries, even if some of them failed to build.
+        if: ${{ always() }}
         uses: actions/upload-artifact@v3
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
