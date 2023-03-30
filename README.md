@@ -12,15 +12,46 @@ Just run `./gradlew build`, this should build everything you need into a package
 
 ## Usage
 
-For now, only local builds are supported. You can install the package using `./gradlew publishToMavenLocal`.
+The latest release is available from _GitHub Packages_.
 
-In your gradle.build.kts:
+For `build.gradle.kts`:
+
 ```kotlin
 repositories {
-    mavenLocal()
+    maven {
+        name = "0x6675636b796f75676974687562/kotlintree"
+        url = uri("https://maven.pkg.github.com/0x6675636b796f75676974687562/kotlintree")
+        credentials {
+            username = project.findProperty("gpr.user") as String? ?: System.getenv("GITHUB_ACTOR")
+            password = project.findProperty("gpr.key") as String? ?: System.getenv("GITHUB_TOKEN")
+        }
+    }
 }
+```
 
+For `settings.gradle.kts`:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        maven {
+            name = "0x6675636b796f75676974687562/kotlintree"
+            url = uri("https://maven.pkg.github.com/0x6675636b796f75676974687562/kotlintree")
+            credentials {
+                username = providers.gradleProperty("gpr.user").orNull
+                    ?: System.getenv("GITHUB_ACTOR")
+                password = providers.gradleProperty("gpr.key").orNull
+                    ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
+    }
+}
+```
+
+Then add the dependency as usual:
+
+```kotlin
 dependencies {
-    implementation("io.github.oxisto:kotlin-tree-jna:0.0.0-SNAPSHOT")
+    implementation("io.github.oxisto:kotlin-tree-jna:0.0.1")
 }
 ```
