@@ -207,7 +207,7 @@ jobs:
           for file in $(find jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/ -type f \( -name 'lib*.so*' -o -name 'lib*.dylib' \))
           do
             old_file="$(basename "${file}")"
-            new_file="$(echo "${old_file}" | sed -n '/^lib..*\.\(so\|dylib\).*/s/\.[0-9][0-9]*//gp')"
+            new_file="$(echo "${old_file}" | sed -n '/^lib..*\.[0-9]..*/s/\.[0-9][0-9]*//gp')"
             if [[ "${old_file}" != "${new_file}" ]]
             then
               echo "mv ${file} $(dirname ${file})/${new_file}"
@@ -296,7 +296,7 @@ jobs:
           for file in $(find jna-lib/src/main/resources/ -type f \( -name 'lib*.so*' -o -name 'lib*.dylib' \))
           do
             old_file="$(basename "${file}")"
-            new_file="$(echo "${old_file}" | sed -n '/^lib..*\.\(so\|dylib\).*/s/\.[0-9][0-9]*//gp')"
+            new_file="$(echo "${old_file}" | sed -n '/^lib..*\.[0-9]..*/s/\.[0-9][0-9]*//gp')"
             if [[ "${old_file}" != "${new_file}" ]]
             then
               echo "mv ${file} $(dirname ${file})/${new_file}"
