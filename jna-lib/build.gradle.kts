@@ -28,15 +28,8 @@ tasks.withType<JavaCompile> {
     targetCompatibility = "11"
 }
 
-tasks.withType<Test> {
-    testLogging {
-        showStandardStreams = true
-        showCauses = true
-        showExceptions = true
-        showStackTraces = true
-        exceptionFormat = FULL
-        events("passed", "skipped")
-    }
+java {
+    withSourcesJar()
 }
 
 /*
@@ -48,6 +41,14 @@ tasks.withType<KotlinTest> {
 }
 
 tasks.withType<Test> {
+    testLogging {
+        showStandardStreams = true
+        showCauses = true
+        showExceptions = true
+        showStackTraces = true
+        exceptionFormat = FULL
+        events("passed", "skipped")
+    }
     reports.junitXml.required.set(true)
 }
 
