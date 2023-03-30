@@ -67,6 +67,7 @@ jobs:
           echo "i686-w64-mingw32-g++  = $(which i686-w64-mingw32-g++)"
           echo "x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc)"
           echo "x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++)"
+          echo "pacman = $(which pacman)"
         shell: bash
 
       - name: 'Set up MinGW'
@@ -74,6 +75,22 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
+
+      - name: 'Check GCC availability (MinGW, 2)'
+        if: ${{ runner.os == 'Windows' }}
+        run: |
+          echo "CC = ${CC}; expanded: $(which "${CC}")"
+          echo "CXX = ${CXX}; expanded: $(which "${CXX}")"
+          echo "cc = $(which cc)"
+          echo "c++ = $(which c++)"
+          echo "gcc = $(which gcc)"
+          echo "g++ = $(which g++)"
+          echo "i686-w64-mingw32-gcc  = $(which i686-w64-mingw32-gcc)"
+          echo "i686-w64-mingw32-g++  = $(which i686-w64-mingw32-g++)"
+          echo "x86_64-w64-mingw32-gcc = $(which x86_64-w64-mingw32-gcc)"
+          echo "x86_64-w64-mingw32-g++ = $(which x86_64-w64-mingw32-g++)"
+          echo "pacman = $(which pacman)"
+        shell: bash
 
       - name: 'Set up CMake'
         uses: lukka/get-cmake@latest
