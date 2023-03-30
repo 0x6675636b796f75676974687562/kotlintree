@@ -242,11 +242,11 @@ jobs:
           # https://github.com/actions/checkout/issues/206#issuecomment-607496604.
           fetch-depth: 0
 
-      - name: 'Download native libraries (darwin-x86_64)'
+      - name: 'Download native libraries (darwin-x86-64)'
         uses: actions/download-artifact@v3
         with:
-          name: 'libtree-sitter-darwin-x86_64'
-          path: jna-lib/src/main/resources/darwin-x86_64/
+          name: 'libtree-sitter-darwin-x86-64'
+          path: jna-lib/src/main/resources/darwin-x86-64/
 
       - name: 'Download native libraries (linux-x86)'
         uses: actions/download-artifact@v3
@@ -254,11 +254,11 @@ jobs:
           name: 'libtree-sitter-linux-x86'
           path: jna-lib/src/main/resources/linux-x86/
 
-      - name: 'Download native libraries (linux-x86_64)'
+      - name: 'Download native libraries (linux-x86-64)'
         uses: actions/download-artifact@v3
         with:
-          name: 'libtree-sitter-linux-x86_64'
-          path: jna-lib/src/main/resources/linux-x86_64/
+          name: 'libtree-sitter-linux-x86-64'
+          path: jna-lib/src/main/resources/linux-x86-64/
 
       - name: 'Download native libraries (win32-x86)'
         uses: actions/download-artifact@v3
@@ -266,11 +266,11 @@ jobs:
           name: 'libtree-sitter-win32-x86'
           path: jna-lib/src/main/resources/win32-x86/
 
-      - name: 'Download native libraries (win32-x86_64)'
+      - name: 'Download native libraries (win32-x86-64)'
         uses: actions/download-artifact@v3
         with:
-          name: 'libtree-sitter-win32-x86_64'
-          path: jna-lib/src/main/resources/win32-x86_64/
+          name: 'libtree-sitter-win32-x86-64'
+          path: jna-lib/src/main/resources/win32-x86-64/
 
       - name: 'Set POSIX attributes'
         if: ${{ runner.os != 'Windows' }}
