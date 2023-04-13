@@ -1,4 +1,6 @@
 # kotlintree
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2F0x6675636b796f75676974687562%2Fkotlintree.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2F0x6675636b796f75676974687562%2Fkotlintree?ref=badge_shield)
+
 
 This little project provides Kotlin bindings for the popular [tree-sitter](http://github.com/tree-sitter/tree-sitter) library. Currently it only supports the Kotlin JVM target, but Kotlin native is on the roadmap (see [#3](https://github.com/oxisto/kotlintree/issues/3)).
 
@@ -55,3 +57,7 @@ dependencies {
     implementation("io.github.oxisto:kotlin-tree-jna:0.0.1")
 }
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2F0x6675636b796f75676974687562%2Fkotlintree.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2F0x6675636b796f75676974687562%2Fkotlintree?ref=badge_large)
