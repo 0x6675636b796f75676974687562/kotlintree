@@ -24,7 +24,7 @@ repositories {
 
 allprojects {
     group = "io.github.oxisto"
-    version = "0.0.2-SNAPSHOT"
+    version = "0.0.2"
 }
 
 tasks.dokkaHtmlCollector.configure{
