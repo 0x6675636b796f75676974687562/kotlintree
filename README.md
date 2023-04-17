@@ -54,7 +54,7 @@ Then add the dependency as usual:
 
 ```kotlin
 dependencies {
-    implementation("io.github.oxisto:kotlin-tree-jna:0.0.1")
+    implementation("io.github.oxisto:kotlin-tree-jna:0.0.2")
 }
 ```
 
