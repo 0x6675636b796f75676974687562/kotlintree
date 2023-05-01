@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("org.jetbrains.dokka") version "1.8.10"
 
-    kotlin("jvm") version "1.8.20" apply false
+    kotlin("jvm") version "1.8.21" apply false
 }
 
 subprojects {
