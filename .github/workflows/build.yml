@@ -91,7 +91,7 @@ jobs:
           echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which "${CC}")|$("${CC}" --version | head -n1)|$("${CC}" -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -193,7 +193,7 @@ jobs:
       statuses: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
@@ -259,7 +259,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
