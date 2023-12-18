@@ -202,7 +202,7 @@ jobs:
           fetch-depth: 0
 
       - name: 'Download native libraries'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: jna-lib/src/main/resources/${{ matrix.jna-os }}-${{ matrix.jna-arch }}/
@@ -268,31 +268,31 @@ jobs:
           fetch-depth: 0
 
       - name: 'Download native libraries (darwin-x86-64)'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-darwin-x86-64'
           path: jna-lib/src/main/resources/darwin-x86-64/
 
       - name: 'Download native libraries (linux-x86)'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-linux-x86'
           path: jna-lib/src/main/resources/linux-x86/
 
       - name: 'Download native libraries (linux-x86-64)'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-linux-x86-64'
           path: jna-lib/src/main/resources/linux-x86-64/
 
       - name: 'Download native libraries (win32-x86)'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-win32-x86'
           path: jna-lib/src/main/resources/win32-x86/
 
       - name: 'Download native libraries (win32-x86-64)'
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: 'libtree-sitter-win32-x86-64'
           path: jna-lib/src/main/resources/win32-x86-64/
