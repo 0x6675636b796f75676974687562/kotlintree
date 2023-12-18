@@ -121,7 +121,7 @@ jobs:
 
       - name: 'Upload native libraries (libtree-sitter.so)'
         if: ${{ runner.os != 'Windows' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
@@ -132,7 +132,7 @@ jobs:
 
       - name: 'Upload native libraries (tree-sitter.dll)'
         if: ${{ runner.os == 'Windows' }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
@@ -142,7 +142,7 @@ jobs:
         # We put each file into the artifact separately, so that internal
         # directory structure remains flat (no relative paths get stored).
       - name: 'Upload native libraries (libtree-sitter-cpp.so)'
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: 'libtree-sitter-${{ matrix.jna-os }}-${{ matrix.jna-arch }}'
           path: |
