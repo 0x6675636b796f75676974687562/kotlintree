@@ -62,6 +62,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
+          version: 12.2.0
 
       - name: 'Set up MinGW environment'
         if: ${{ runner.os == 'Windows' }}
