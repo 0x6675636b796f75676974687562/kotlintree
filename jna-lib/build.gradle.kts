@@ -75,7 +75,7 @@ repositories {
 dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    api("net.java.dev.jna:jna:5.13.0")
+    api("net.java.dev.jna:jna:5.14.0")
 }
 
 testing {
