@@ -36,7 +36,7 @@ jobs:
             jna-os: linux
           - os: windows-latest
             jna-os: win32
-          - os: macos-latest
+          - os: macos-13
             jna-os: darwin
           - arch: x86
             jna-arch: x86
@@ -62,6 +62,7 @@ jobs:
         uses: egor-tensin/setup-mingw@v2
         with:
           platform: ${{ matrix.arch }}
+          version: 12.2.0
 
       - name: 'Set up MinGW environment'
         if: ${{ runner.os == 'Windows' }}
@@ -91,7 +92,7 @@ jobs:
           echo "|$(arch)|$(uname -m)|$(cmake --version | head -n1)|$(which "${CC}")|$("${CC}" --version | head -n1)|$("${CC}" -dumpmachine)|" >>${GITHUB_STEP_SUMMARY}
         shell: bash
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           submodules: recursive
 
@@ -167,7 +168,7 @@ jobs:
             jna-os: linux
           - os: windows-latest
             jna-os: win32
-          - os: macos-latest
+          - os: macos-13
             jna-os: darwin
           - arch: x86
             jna-arch: x86
@@ -193,7 +194,7 @@ jobs:
       statuses: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
@@ -259,7 +260,7 @@ jobs:
       packages: write
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           # Fetch Git tags, so that semantic version can be calculated.
           # Alternatively, run `git fetch --prune --unshallow --tags` as the
