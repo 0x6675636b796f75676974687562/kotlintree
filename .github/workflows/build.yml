@@ -36,7 +36,7 @@ jobs:
             jna-os: linux
           - os: windows-latest
             jna-os: win32
-          - os: macos-latest
+          - os: macos-13
             jna-os: darwin
           - arch: x86
             jna-arch: x86
@@ -168,7 +168,7 @@ jobs:
             jna-os: linux
           - os: windows-latest
             jna-os: win32
-          - os: macos-latest
+          - os: macos-13
             jna-os: darwin
           - arch: x86
             jna-arch: x86
