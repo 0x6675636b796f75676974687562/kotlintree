@@ -18,7 +18,7 @@ pluginManagement {
 }
 
 plugins {
-    id("com.gradle.enterprise") version "3.16.1"
+    id("com.gradle.enterprise") version "3.17.6"
 }
 
 include("jna-lib")
