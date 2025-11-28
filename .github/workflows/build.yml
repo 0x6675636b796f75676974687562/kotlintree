@@ -240,7 +240,7 @@ jobs:
 
       - name: 'Run unit tests'
         id: test
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
@@ -329,7 +329,7 @@ jobs:
 
       - name: 'Publish a release'
         id: publish
-        uses: gradle/gradle-build-action@v2
+        uses: gradle/gradle-build-action@v3
         with:
           gradle-version: wrapper
           arguments: |
