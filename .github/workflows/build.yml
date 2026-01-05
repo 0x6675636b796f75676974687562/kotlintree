@@ -59,7 +59,7 @@ jobs:
       - name: 'Set up MinGW'
         id: 'mingw'
         if: ${{ runner.os == 'Windows' && matrix.arch == 'x86' }}
-        uses: egor-tensin/setup-mingw@v2
+        uses: egor-tensin/setup-mingw@v3
         with:
           platform: ${{ matrix.arch }}
           version: 12.2.0
